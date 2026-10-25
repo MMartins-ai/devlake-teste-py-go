@@ -1,24 +1,7 @@
-# Licensed to the Apache Software Foundation (ASF) under one or more
-# contributor license agreements.  See the NOTICE file distributed with
-# this work for additional information regarding copyright ownership.
-# The ASF licenses this file to You under the Apache License, Version 2.0
-# (the "License"); you may not use this file except in compliance with
-# the License.  You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+FROM mcr.microsoft.com/devcontainers/python:1-3.12
 
-FROM mcr.microsoft.com/devcontainers/go:1-1.26-bookworm
-
-ENV PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/lib:/usr/local/lib/pkgconfig
-ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
-ENV DEVLAKE_PLUGINS=argocd,bamboo,bitbucket,circleci,customize,dora,gitextractor,github,github_graphql,gitlab,issue_trace,jenkins,jira,org,pagerduty,refdiff,slack,sonarqube,trello,webhook
-
-RUN apt-get update -y
-RUN apt-get install pkg-config python3-dev default-libmysqlclient-dev build-essential libpq-dev cmake -y
-RUN git clone -b v1.5.0 https://github.com/libgit2/libgit2.git && cd libgit2 && mkdir build && cd build && cmake .. && make && make install
+# A imagem pode trazer o repositorio legado do Yarn com uma chave GPG
+# indisponivel. As features executam apt-get update durante o build e falham
+# antes de instalar o Docker-in-Docker. O Node e instalado por sua propria
+# feature, portanto este repositorio nao e necessario.
+RUN rm -f /etc/apt/sources.list.d/yarn.list
