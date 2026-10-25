@@ -1,19 +1,27 @@
-#!/bin/sh
-#
-# Licensed to the Apache Software Foundation (ASF) under one or more
-# contributor license agreements.  See the NOTICE file distributed with
-# this work for additional information regarding copyright ownership.
-# The ASF licenses this file to You under the Apache License, Version 2.0
-# (the "License"); you may not use this file except in compliance with
-# the License.  You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-make dep
-npm install commitizen -g
+#!/usr/bin/env bash
+set -euo pipefail
+
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+FBD_PROJECT="$PROJECT_ROOT/FBD_trabalho/projeto_fluxo_entrega"
+
+sudo apt-get update
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+  chromium \
+  latexmk \
+  texlive-lang-portuguese \
+  texlive-latex-base \
+  texlive-latex-extra \
+  texlive-latex-recommended
+
+sudo env PUPPETEER_SKIP_DOWNLOAD=true \
+  npm install --global @mermaid-js/mermaid-cli@11.16.0
+
+if [[ -f "$PROJECT_ROOT/requirements.txt" ]]; then
+  pip3 install -r "$PROJECT_ROOT/requirements.txt"
+fi
+
+if [[ -f "$FBD_PROJECT/etl/requirements.txt" ]]; then
+  python3 -m venv "$FBD_PROJECT/etl/.venv"
+  "$FBD_PROJECT/etl/.venv/bin/pip" install \
+    -r "$FBD_PROJECT/etl/requirements.txt"
+fi
